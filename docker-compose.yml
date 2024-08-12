@@ -1,0 +1,29 @@
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: "Limalaca1"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - mi_red
+
+  api:
+    image: ${DOCKER_REGISTRY-}personaapi
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - sqlserver
+    environment:
+      ConnectionStrings: "Server=localhost,1433;Database=SQL-Server-Local;User ID=sa;Password=Limalaca1;MultipleActiveResultSets=True;Encrypt=False;"
+    ports:
+      - "5000:80"
+    networks:
+      - mi_red
+
+networks:
+  mi_red:
+    driver: bridge
